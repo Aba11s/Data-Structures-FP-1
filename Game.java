@@ -40,7 +40,6 @@ public class Game {
                 Minimax.count = 0;
                 isPlayersTurn = true;
             }
-
         }
     }
 }
