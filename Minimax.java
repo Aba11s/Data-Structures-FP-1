@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 class Move {
 
@@ -7,6 +8,7 @@ class Move {
     int mBB;
     int score = 0;
     boolean isMax;
+
     ArrayList<Move> nextMoves = new ArrayList<>();
 
     Move(int xBB, int oBB, boolean isMax) {
@@ -14,7 +16,6 @@ class Move {
         this.oBB = oBB;
         this.mBB = oBB | xBB;
         this.isMax = isMax;
-        findNextPossibleMoves();
     }
 
     int getNextXBB(int i) {
@@ -27,22 +28,53 @@ class Move {
         return oBB;
     }
 
+    boolean checkForWin() {
+        for (int wBB : BitBoard.winBB) {
+            if ((wBB & xBB) == wBB) {
+                score = 1;
+                return true;
+            }
+
+            if ((wBB & oBB) == wBB) {
+                score = -1;
+                return true;
+            }
+        }
+        return false;
+    }
+
     void findNextPossibleMoves() {
-        for(int i = 8; i >= 0; i--) {
-            if((mBB << i) == 0) {
+        for(int i = 9; i > 0; i--) {
+            if((mBB & BitBoard.mask(i)) == 0) {
                 nextMoves.add(new Move(getNextXBB(i), getNextOBB(i), !isMax));
+                System.out.println(nextMoves);
             }
         }
     }
 
-
+    @Override
+    public String toString() {
+        return "XBB: " + Integer.toBinaryString(xBB);
+    }
 }
+
+
+
 
 class Minimax {
 
+    static int count = 0;
+
     static int minimax(Move mv, boolean isMax) {
+        count++;
+
+        if(!mv.checkForWin()) {
+            mv.findNextPossibleMoves();
+            //System.out.println("MC");
+        }
 
         if(mv.nextMoves.isEmpty()) {
+            //System.out.println("Return");
             return mv.score;
         }
 
@@ -52,7 +84,7 @@ class Minimax {
             for(Move m : mv.nextMoves) {
                 scores.add(minimax(m, false));
             }
-            mv.score = findLargest(scores);
+            mv.score = Collections.max(scores);
             return mv.score;
 
         }
@@ -60,11 +92,11 @@ class Minimax {
             for(Move m : mv.nextMoves) {
                 scores.add(minimax(m, true));
             }
-            mv.score = findSmallest(scores);
+            mv.score = Collections.min(scores);
             return mv.score;
         }
-
     }
+
 
     // Util functions
     static int findLargest(ArrayList<Integer> scores) {
