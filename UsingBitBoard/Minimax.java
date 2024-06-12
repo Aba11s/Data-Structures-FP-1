@@ -57,7 +57,6 @@ class Minimax {
             }
             mv.score = findLargest(scores);
             return mv.score;
-
         }
         else {
             for(Move m : mv.nextMoves) {

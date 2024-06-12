@@ -21,7 +21,18 @@ public class Move {
         this.currentDepth = currentDepth;
         this.maxDepth = maxDepth;
 
+        //TODO
+        // add method to check for board win state
+
         findNextPossibleMoves();
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     private void findNextPossibleMoves() {
