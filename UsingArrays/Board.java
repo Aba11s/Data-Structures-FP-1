@@ -11,7 +11,7 @@ public class Board {
     ));
 
     public void insertCharMarker(char marker, int rowPos, int colPos) {
-        this.checkForBoundaryError();
+        // this.checkForBoundaryError();
         rowColumnBoard.get(rowPos).add(colPos, marker);
     }
 
@@ -35,8 +35,12 @@ public class Board {
         return board;
     }
 
-    private ArrayList<ArrayList<Character>> getRowColumnBoard() {
+    public ArrayList<ArrayList<Character>> getRowColumnBoard() {
         return rowColumnBoard;
+    }
+
+    public void checkPossibleMoves() {
+
     }
 
     /**

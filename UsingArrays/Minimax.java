@@ -5,12 +5,22 @@ import java.util.Collections;
 import java.util.Queue;
 
 public class Minimax {
-
+    static int count;
     /**
      *
      * @return
      */
-    static int minimax(Move move, boolean isMax) {
+    static int minimax(Move move, boolean isMax, int currentDepth, int maxDepth) {
+        count++;
+
+        if(currentDepth == maxDepth) {
+            return move.getScore();
+        }
+
+        if(!move.isBoardInWinState()) {
+            move.findNextPossibleMoves();
+        }
+
         if(move.nextMoves.isEmpty()) {
             return move.getScore();
         }
@@ -19,12 +29,12 @@ public class Minimax {
 
         if(isMax) {
             for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, false));
+                scores.add(minimax(currentMove, false, currentDepth+1, maxDepth));
             }
             move.setScore(findLargest(scores));
         } else {
             for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, true));
+                scores.add(minimax(currentMove, true, currentDepth+1, maxDepth));
             }
             move.setScore(findSmallest(scores));
         }
