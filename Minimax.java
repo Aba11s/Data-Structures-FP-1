@@ -18,16 +18,6 @@ class Move {
         this.isMax = isMax;
     }
 
-    int getNextXBB(int i) {
-        if(isMax) {return xBB | BitBoard.mask(i);}
-        return xBB;
-    }
-
-    int getNextOBB(int i) {
-        if(!isMax) {return oBB | BitBoard.mask(i);}
-        return oBB;
-    }
-
     boolean checkForWin() {
         for (int wBB : BitBoard.winBB) {
             if ((wBB & xBB) == wBB) {
@@ -44,10 +34,13 @@ class Move {
     }
 
     void findNextPossibleMoves() {
-        for(int i = 9; i > 0; i--) {
+        for(int i = 8; i >= 0; i--) {
             if((mBB & BitBoard.mask(i)) == 0) {
-                nextMoves.add(new Move(getNextXBB(i), getNextOBB(i), !isMax));
-                System.out.println(nextMoves);
+                if(isMax) {
+                    nextMoves.add(new Move(xBB, oBB | BitBoard.mask(i), false));
+                } else {
+                    nextMoves.add(new Move(xBB | BitBoard.mask(i), oBB, true));
+                }
             }
         }
     }
@@ -68,13 +61,9 @@ class Minimax {
     static int minimax(Move mv, boolean isMax) {
         count++;
 
-        if(!mv.checkForWin()) {
-            mv.findNextPossibleMoves();
-            //System.out.println("MC");
-        }
+        mv.findNextPossibleMoves();
 
-        if(mv.nextMoves.isEmpty()) {
-            //System.out.println("Return");
+        if(mv.checkForWin() || mv.nextMoves.isEmpty()) {
             return mv.score;
         }
 

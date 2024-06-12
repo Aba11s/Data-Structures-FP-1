@@ -2,8 +2,8 @@ import java.util.*;
 
 class BitBoard {
 
-    static int xBB = 0b000000000; // BB of Xs
-    static int oBB = 0b000000000; // BB of Os
+    static int xBB = 0b100000000; // BB of Xs
+    static int oBB = 0b000100000; // BB of Os
     static int mBB; // BB of Os | Xs
 
     static int[] winBB = new int[] {  // BM of winning moves
@@ -32,6 +32,7 @@ class BitBoard {
     void setMBB() {mBB = xBB | oBB;}
 
     void checkPossibleMoves() {
+
         for(int i = 8; i >= 0; i--) {
             if((mBB & mask(i)) == 0){
                 Move move = new Move(xBB, oBB | mask(i), false);
@@ -39,6 +40,7 @@ class BitBoard {
                 System.out.println("index: " + i);
             }
         }
+
         System.out.println(nextPossibleMoveSet);
         nextChosenMove = Collections.min(nextPossibleMoveSet.entrySet(), Map.Entry.comparingByValue()).getKey();
         nextPossibleMoveSet.clear();

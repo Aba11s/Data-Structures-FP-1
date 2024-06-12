@@ -27,15 +27,25 @@ public class Game {
                 bitBoard.markXBB(playerMove);
                 bitBoard.setMBB();
 
+                if(bitBoard.checkForWin(BitBoard.xBB)) {
+                    System.out.println("Player won");
+                    break;
+                };
+
                 isPlayersTurn = false;
             }
             else {
                 bitBoard.checkPossibleMoves();
-                System.out.println("COUNT: " + Minimax.count);
+                System.out.println("COUNT : " + Minimax.count);
                 System.out.println("AI move : " + BitBoard.nextChosenMove);
                 System.out.println("XBB : " + Integer.toBinaryString(BitBoard.xBB));
                 System.out.println("OBB : " + Integer.toBinaryString(BitBoard.oBB));
                 System.out.println("MBB : " + Integer.toBinaryString(BitBoard.mBB));
+
+                if(bitBoard.checkForWin(BitBoard.oBB)) {
+                    System.out.println("AI won");
+                    break;
+                };
 
                 Minimax.count = 0;
                 isPlayersTurn = true;
