@@ -12,6 +12,7 @@ public class Driver {
     private static boolean isPlayerTurn = true;
     private static int playerRow;
     private static int playerCol;
+    private static int maxDepth = 4;
 
     public static void main(String[] args) {
         Board gameBoard = new Board();
@@ -22,6 +23,8 @@ public class Driver {
         Scanner scanner = new Scanner(System.in);
 
         while(true) {
+            int turnCount = 1;
+
             if (isPlayerTurn) {
                 gameBoard.printBoard();
                 System.out.println("Player's turn, pick a move!");
@@ -30,9 +33,27 @@ public class Driver {
                 playerCol = scanner.nextInt();
                 addNewMarker(gameBoard, 'o', playerRow, playerCol);
 
+                if (gameBoard.checkForWin()) {
+                    System.out.println("Player won");
+                    break;
+                }
+
+                gameBoard.printBoard();
+
                 isPlayerTurn = false;
             } else {
-                
+                gameBoard.checkPossibleMovesArrays(xInsertionOrder, oInsertionOrder, turnCount, 8);
+                System.out.println(xInsertionOrder.peek().getRowPos());
+                System.out.println(oInsertionOrder.peek().getRowPos());
+
+                if(gameBoard.checkForWin()) {
+                    System.out.println("AI won");
+                    break;
+                }
+                System.out.println("Minimax Count: " + Minimax.count);
+
+                Minimax.count = 0;
+                isPlayerTurn = true;
             }
         }
     }
@@ -51,7 +72,7 @@ public class Driver {
             case 'x':
                 xInsertionOrder.add(new Marker(marker, rowPos, colPos));
                 break;
-            case 'y':
+            case 'o':
                 oInsertionOrder.add(new Marker(marker, rowPos, colPos));
                 break;
             default:

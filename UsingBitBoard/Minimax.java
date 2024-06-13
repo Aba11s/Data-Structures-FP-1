@@ -65,7 +65,6 @@ class Minimax {
             mv.score = findSmallest(scores);
             return mv.score;
         }
-
     }
 
     // Util functions

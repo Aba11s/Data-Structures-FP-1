@@ -29,12 +29,12 @@ public class Minimax {
 
         if(isMax) {
             for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, false, currentDepth+1, maxDepth));
+                scores.add(minimax(currentMove, false, currentDepth, maxDepth));
             }
             move.setScore(findLargest(scores));
         } else {
             for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, true, currentDepth+1, maxDepth));
+                scores.add(minimax(currentMove, true, currentDepth, maxDepth));
             }
             move.setScore(findSmallest(scores));
         }
