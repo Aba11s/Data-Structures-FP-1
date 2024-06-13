@@ -2,8 +2,8 @@ import java.util.*;
 
 class BitBoard {
 
-    static int xBB = 0b100000000; // BB of Xs
-    static int oBB = 0b000100000; // BB of Os
+    static int xBB = 0b000000000; // BB of Xs
+    static int oBB = 0b000000000; // BB of Os
     static int mBB; // BB of Os | Xs
 
     static int[] winBB = new int[] {  // BM of winning moves
@@ -16,27 +16,26 @@ class BitBoard {
     static LinkedHashMap<Integer, Integer> nextPossibleMoveSet = new LinkedHashMap<>();
     static int nextChosenMove;
 
-
     BitBoard() {}
 
     static int mask(int i) {return 1 << i;}
 
     void markOBB(int i) {
         oBB |= mask(i);
+        mBB = xBB | oBB;
     }
 
     void markXBB(int i) {
         xBB |= mask(i);
+        mBB = xBB | oBB;
     }
-
-    void setMBB() {mBB = xBB | oBB;}
 
     void checkPossibleMoves() {
 
         for(int i = 8; i >= 0; i--) {
             if((mBB & mask(i)) == 0){
-                Move move = new Move(xBB, oBB | mask(i), false);
-                nextPossibleMoveSet.put(i, Minimax.minimax(move, false));
+                Move move = new Move(xBB, oBB | mask(i), false, 0, 8);
+                nextPossibleMoveSet.put(i, Minimax.minimax(move, false, 0, 8));
                 System.out.println("index: " + i);
             }
         }
@@ -45,18 +44,41 @@ class BitBoard {
         nextChosenMove = Collections.min(nextPossibleMoveSet.entrySet(), Map.Entry.comparingByValue()).getKey();
         nextPossibleMoveSet.clear();
         markOBB(nextChosenMove);
-        setMBB();
     }
-
-    void chooseBestPossibleMove() {
-    }
-
-    boolean checkForOverlap(int i) {return((mBB & mask(i)) != 0);}
 
     boolean checkForWin(int bb) {
         for(int wBB : winBB) {
             if((wBB & bb) == wBB) {return true;}
         }
         return false;
+    }
+
+    static void print() {
+        for(int y = 0 ; y < 3; y++) {
+            StringBuilder sb= new StringBuilder("|");
+
+            for(int x = 0; x < 3; x++){
+                // create mask
+                int mask = mask(x+y*3);
+
+                // values for X
+                if((xBB & mask) != 0) {
+                    sb.append(" X |");
+                    continue;
+                }
+
+                // values for Y
+                if((oBB & mask) != 0) {
+                    sb.append(" O |");
+                    continue;
+                }
+
+                sb.append("   |");
+            }
+            System.out.println("|---|---|---|");
+            System.out.println(sb);
+        }
+        System.out.println("|---|---|---|");
+        System.out.println("");
     }
 }

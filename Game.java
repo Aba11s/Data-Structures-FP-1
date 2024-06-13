@@ -25,7 +25,8 @@ public class Game {
 
                 playerMove = scanner.nextInt();
                 bitBoard.markXBB(playerMove);
-                bitBoard.setMBB();
+
+                BitBoard.print();
 
                 if(bitBoard.checkForWin(BitBoard.xBB)) {
                     System.out.println("Player won");
@@ -41,6 +42,8 @@ public class Game {
                 System.out.println("XBB : " + Integer.toBinaryString(BitBoard.xBB));
                 System.out.println("OBB : " + Integer.toBinaryString(BitBoard.oBB));
                 System.out.println("MBB : " + Integer.toBinaryString(BitBoard.mBB));
+
+                BitBoard.print();
 
                 if(bitBoard.checkForWin(BitBoard.oBB)) {
                     System.out.println("AI won");
