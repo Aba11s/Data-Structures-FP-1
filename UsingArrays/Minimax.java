@@ -2,43 +2,61 @@ package UsingArrays;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Queue;
 
 public class Minimax {
     static int count;
+
     /**
      *
-     * @return
+     * @return value of move after evaluating its listOfMinimax
      */
-    static int minimax(Move move, boolean isMax, int currentDepth, int maxDepth) {
+    public static int minimax(Board board, char markerNextPlayer, boolean isMax) {
+        // finds out how many minimaxes are generated
         count++;
 
-        if(currentDepth == maxDepth) {
-            return move.getScore();
+        if (board.checkForWin('x')) {
+            return -1;
+        } else if (board.checkForWin('o')) {
+            return 1;
         }
 
-        if(!move.isBoardInWinState()) {
-            move.findNextPossibleMoves();
+        ArrayList<ArrayList<Integer>> listOfEmptySlots = board.getEmptySlotRowColumn();
+
+        if (listOfEmptySlots.isEmpty()) {
+            return 0;
         }
 
-        if(move.nextMoves.isEmpty()) {
-            return move.getScore();
-        }
+        ArrayList<Integer> listOfBoardScores = new ArrayList<>();
 
-        ArrayList<Integer> scores = new ArrayList<>();
+        if (markerNextPlayer == 'x') {
+            for (ArrayList<Integer> emptySlotPosition : listOfEmptySlots) {
+                Board boardCopy = new Board(board);
+                int rowPos = emptySlotPosition.get(0);
+                int colPos = emptySlotPosition.get(1);
 
-        if(isMax) {
-            for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, false, currentDepth, maxDepth));
+                boardCopy.insertCharMarker(markerNextPlayer, rowPos, colPos);
+
+                listOfBoardScores.add(minimax(boardCopy, 'o', !isMax));
             }
-            move.setScore(findLargest(scores));
+        }
+
+        if (markerNextPlayer == 'o') {
+            for (ArrayList<Integer> emptySlotPosition : listOfEmptySlots) {
+                Board boardCopy = new Board(board);
+                int rowPos = emptySlotPosition.get(0);
+                int colPos = emptySlotPosition.get(1);
+
+                boardCopy.insertCharMarker(markerNextPlayer, rowPos, colPos);
+
+                listOfBoardScores.add(minimax(boardCopy, 'x', !isMax));
+            }
+        }
+
+        if (isMax) {
+            return findLargest(listOfBoardScores);
         } else {
-            for(Move currentMove : move.nextMoves) {
-                scores.add(minimax(currentMove, true, currentDepth, maxDepth));
-            }
-            move.setScore(findSmallest(scores));
+            return findSmallest(listOfBoardScores);
         }
-        return move.getScore();
     }
 
     // Util functions

@@ -1,39 +1,35 @@
 package UsingArrays;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.*;
 
 public class Driver {
-    private static Queue<Marker> xInsertionOrder = new LinkedList<>();
-    private static Queue<Marker> oInsertionOrder = new LinkedList<>();
     private static final char X = 'x';
     private static final char O = 'o';
     private static boolean isPlayerTurn = true;
     private static int playerRow;
     private static int playerCol;
-    private static int maxDepth = 4;
 
     public static void main(String[] args) {
         Board gameBoard = new Board();
-
-        //addNewMarker(gameBoard, X, 0,0);
-        //addNewMarker(gameBoard, O, 0, 1);
-
+        ArrayList<ArrayList<Integer>> listOfEmptySlots = gameBoard.getEmptySlotRowColumn();
         Scanner scanner = new Scanner(System.in);
 
-        while(true) {
-            int turnCount = 1;
+        gameBoard.printBoard();
 
+        while(true) {
             if (isPlayerTurn) {
-                gameBoard.printBoard();
+                if (listOfEmptySlots.isEmpty()) {
+                    System.out.println("It's a Draw!");
+                    break;
+                }
+
                 System.out.println("Player's turn, pick a move!");
 
                 playerRow = scanner.nextInt();
                 playerCol = scanner.nextInt();
-                addNewMarker(gameBoard, 'o', playerRow, playerCol);
+                gameBoard.insertCharMarker(O, playerRow, playerCol);
 
-                if (gameBoard.checkForWin()) {
+                if (gameBoard.checkForWin(O)) {
                     System.out.println("Player won");
                     break;
                 }
@@ -42,41 +38,48 @@ public class Driver {
 
                 isPlayerTurn = false;
             } else {
-                gameBoard.checkPossibleMovesArrays(xInsertionOrder, oInsertionOrder, turnCount, 8);
-                System.out.println(xInsertionOrder.peek().getRowPos());
-                System.out.println(oInsertionOrder.peek().getRowPos());
+                if (listOfEmptySlots.isEmpty()) {
+                    System.out.println("It's a Draw!");
+                    break;
+                }
 
-                if(gameBoard.checkForWin()) {
+                // gameBoard.checkPossibleMovesArrays(xInsertionOrder, oInsertionOrder, turnCount);
+
+                HashMap<ArrayList<Integer>, Integer> boardScore = new HashMap<>();
+
+                for (ArrayList<Integer> emptySlotPosition : listOfEmptySlots) {
+                    Board boardCopy = new Board(gameBoard);
+                    int tryRow = emptySlotPosition.get(0);
+                    int tryCol = emptySlotPosition.get(1);
+
+                    boardCopy.insertCharMarker(X, tryRow, tryCol);
+                    int minimaxResult = Minimax.minimax(boardCopy, O, true);
+                    boardScore.put(new ArrayList<>(List.of(tryRow, tryCol)), minimaxResult);
+                }
+                System.out.println("Minimax Count: " + Minimax.count);
+
+                ArrayList<Integer> optimalBoardPos = new ArrayList<>();
+                int bestScore = 2;
+
+                for (Map.Entry<ArrayList<Integer>, Integer> boardScorePair : boardScore.entrySet()) {
+                    if (boardScorePair.getValue() < bestScore) {
+                        bestScore = boardScorePair.getValue();
+                        optimalBoardPos = boardScorePair.getKey();
+                    }
+                }
+
+                gameBoard.insertCharMarker('x', optimalBoardPos.get(0), optimalBoardPos.get(1));
+
+                gameBoard.printBoard();
+
+                if(gameBoard.checkForWin(X)) {
                     System.out.println("AI won");
                     break;
                 }
-                System.out.println("Minimax Count: " + Minimax.count);
 
                 Minimax.count = 0;
                 isPlayerTurn = true;
             }
-        }
-    }
-
-    /**
-     * adds a new marker into the board
-     * @param board
-     * @param marker
-     * @param rowPos
-     * @param colPos
-     */
-    private static void addNewMarker(Board board, char marker, int rowPos, int colPos) {
-        board.insertCharMarker(marker, rowPos, colPos);
-
-        switch(marker) {
-            case 'x':
-                xInsertionOrder.add(new Marker(marker, rowPos, colPos));
-                break;
-            case 'o':
-                oInsertionOrder.add(new Marker(marker, rowPos, colPos));
-                break;
-            default:
-                System.out.println("Error: incorrect marker inserted");
         }
     }
 }
