@@ -12,7 +12,7 @@ public class Driver {
 
     public static void main(String[] args) {
 
-        testMinimax();
+        testBot();
     }
 
     private static void run() {
@@ -110,6 +110,49 @@ public class Driver {
         }
         long endTime = System.nanoTime();
 
+        long duration = (endTime - startTime);
+        System.out.println("Completed in: " + duration + " nanoseconds");
+        System.out.println("Completed in: " + (duration/1000000000f) + " seconds");
+        System.out.println("Minimax count: " + Minimax.count);
+    }
+
+    private static void testBot() {
+
+        int iteration = 10000;
+        Board testBoard = new Board(0,0);
+
+        long startTime = System.nanoTime();
+
+        /* Program */
+        for(int i = 0; i < iteration; i++) {
+            // HashMap<index, score>
+            HashMap<Integer, Integer> idxScores = new HashMap<>();
+
+            // Tries each empty slot and stores their respective score
+            for(int idx : testBoard.getEmptySlots()) {
+                Board phantomBoard = new Board(testBoard);
+                phantomBoard.xBB = phantomBoard.markSpace(testBoard.xBB, idx);
+
+                int minimaxResult = Minimax.minimax(phantomBoard, true);
+                idxScores.put(idx, minimaxResult);
+//                System.out.println("UsingBitBoard.Minimax result:" + minimaxResult + ",idx:" + idx + ", count:" + Minimax.count);
+//                Minimax.count = 0;
+            }
+
+            int optimalIdx = testBoard.getEmptySlots().getFirst();
+            int bestScore = 2;
+
+            for(Map.Entry<Integer, Integer> idxScorePair : idxScores.entrySet()) {
+                if(idxScorePair.getValue() < bestScore) {
+                    bestScore = idxScorePair.getValue();
+                    optimalIdx = idxScorePair.getKey();
+                }
+            }
+        }
+
+        /* END */
+
+        long endTime = System.nanoTime();
         long duration = (endTime - startTime);
         System.out.println("Completed in: " + duration + " nanoseconds");
         System.out.println("Completed in: " + (duration/1000000000f) + " seconds");
