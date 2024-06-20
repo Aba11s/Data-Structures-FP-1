@@ -10,10 +10,10 @@ public class Driver {
     private static int playerCol;
 
     public static void main(String[] args) {
-        //runGame();
+        runGame();
         //runTimeEfficiencyTestOverall();
         //runTimeEfficiencyTestOneByOne();
-        runSpaceEfficiencyTestOneByOne();
+        //runSpaceEfficiencyTestOneByOne();
     }
 
     private static void runGame() {
