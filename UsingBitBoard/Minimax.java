@@ -1,5 +1,3 @@
-package UsingBitBoard;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,43 +7,61 @@ class Move {
     int oBB;
     int mBB;
     int score = 0;
+
+    int currentDepth;
+    int maxDepth;
     boolean isMax;
+
     ArrayList<Move> nextMoves = new ArrayList<>();
 
-    Move(int xBB, int oBB, boolean isMax) {
+    Move(int xBB, int oBB, boolean isMax, int currentDepth, int maxDepth) {
         this.xBB = xBB;
         this.oBB = oBB;
         this.mBB = oBB | xBB;
+
+        this.currentDepth = currentDepth;
+        this.maxDepth = maxDepth;
         this.isMax = isMax;
-        findNextPossibleMoves();
     }
 
-    int getNextXBB(int i) {
-        if(isMax) {return xBB | BitBoard.mask(i);}
-        return xBB;
-    }
+    boolean checkForWin() {
+        for (int wBB : BitBoard.winBB) {
+            if ((wBB & xBB) == wBB) {
+                score = 100 - currentDepth;
+                return true;
+            }
 
-    int getNextOBB(int i) {
-        if(!isMax) {return oBB | BitBoard.mask(i);}
-        return oBB;
+            if ((wBB & oBB) == wBB) {
+                score = -100 + currentDepth;
+                return true;
+            }
+        }
+        return false;
     }
 
     void findNextPossibleMoves() {
-        for(int i = 8; i >= 0; i--) {
-            if((mBB << i) == 0) {
-                nextMoves.add(new Move(getNextXBB(i), getNextOBB(i), !isMax));
+        for(int i = 0; i < 9; i++) {
+            if((mBB & BitBoard.mask(i)) == 0) {
+                if(isMax) {
+                    nextMoves.add(new Move(xBB, oBB | BitBoard.mask(i), false, currentDepth+1, maxDepth));
+                } else {
+                    nextMoves.add(new Move(xBB | BitBoard.mask(i), oBB, true, currentDepth+1, maxDepth));
+                }
             }
         }
     }
-
-
 }
 
 class Minimax {
 
-    static int minimax(Move mv, boolean isMax) {
+    static int count = 0;
 
-        if(mv.nextMoves.isEmpty()) {
+    static int minimax(Move mv, boolean isMax, int currentDepth, int maxDepth) {
+        count++;
+
+        mv.findNextPossibleMoves();
+
+        if(mv.checkForWin() || mv.nextMoves.isEmpty()) {
             return mv.score;
         }
 
@@ -53,27 +69,18 @@ class Minimax {
 
         if(isMax) {
             for(Move m : mv.nextMoves) {
-                scores.add(minimax(m, false));
+                scores.add(minimax(m, false, currentDepth+1, maxDepth));
             }
-            mv.score = findLargest(scores);
+            mv.score = Collections.max(scores);
             return mv.score;
+
         }
         else {
             for(Move m : mv.nextMoves) {
-                scores.add(minimax(m, true));
+                scores.add(minimax(m, true, currentDepth+1, maxDepth));
             }
-            mv.score = findSmallest(scores);
+            mv.score = Collections.min(scores);
             return mv.score;
         }
-    }
-
-    // Util functions
-    static int findLargest(ArrayList<Integer> scores) {
-        return Collections.max(scores);
-    }
-
-    // Util functions
-    static int findSmallest(ArrayList<Integer> scores) {
-        return Collections.min(scores);
     }
 }
