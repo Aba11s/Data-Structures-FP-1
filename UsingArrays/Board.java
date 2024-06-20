@@ -89,10 +89,6 @@ public class Board {
         return false;
     }
 
-//    public boolean isOccupied(int rowPos, int colPos) {
-//        return rowColumnBoard.get(rowPos).get(colPos) == 'o' || rowColumnBoard.get(rowPos).get(colPos) == 'x';
-//    }
-
     public void printBoard() {
         for(ArrayList<Character> rowArrays : rowColumnBoard) {
             System.out.println(rowArrays.toString());
